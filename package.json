@@ -1,0 +1,6 @@
+{
+
+  "scripts": {
+    "start": "nodemon --watch index.js --exec electron ."
+  }
+}
