@@ -4,7 +4,7 @@
  * @Author: JBFace
  * @Date: 2023-08-25 12:11:20
  * @LastEditors: JBFace
- * @LastEditTime: 2023-09-01 00:28:56
+ * @LastEditTime: 2023-09-06 20:47:58
 -->
 
 <!DOCTYPE html>
@@ -29,12 +29,13 @@
       background-color: #f0f0f0;
       color: #333;
       border: none;
-      border-radius: 8px;
+      border-radius: 5px;
       cursor: pointer;
       height: 72px;
       width: 75px;
       vertical-align:bottom;
       z-index: 20;
+
     }
 
     .button:hover {
@@ -49,13 +50,35 @@
       background-color: #f0f0f0;
       color: #333;
       border: none;
-      border-radius: 8px;
+      border-radius: 5px;
       cursor: pointer;
       height: 25px;
-      width: 75px;
+      width: 35px;
       vertical-align:top;
       margin-bottom:3px;
+      margin-right: 4px;
     }
+
+    .button_l {
+      display: inline-block;
+      font-size: 10px;
+      text-align: center;
+      text-decoration: none;
+      background-color: #dd001b;      
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      height: 15px;
+      width: 75px;
+      vertical-align:top;
+      font-family:Arial Black, Gadget, sans-serif;
+      /* margin-bottom:3px; */
+    }
+    .button_l:hover {
+      box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2), -2px -2px 4px rgba(255, 255, 255, 0.5);
+    }
+
 
     .button_s:hover {
       box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2), -2px -2px 4px rgba(255, 255, 255, 0.5);
@@ -69,25 +92,41 @@
       background-color: #f0f0f0;
       border-radius: 5%;      
       overflow: hidden;
-      float:left;
-      margin-left:3px;
-      margin-right:3px;
+      position: relative;
+    }
+
+    .album-cover img{
+      height: 100px;
+      opacity: 1;
+      transition: height 1s;
+    }
+
+    .album-cover:hover img{
+      height: 20px;
+    }
+
+    .album-cover:hover info{
+      display: block;      
+    }
+
+    .album-cover info{
+      background-color: blue;
+      z-index: 99;
     }
 
     .album-cover img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      z-index: 11;
-
     }
 
     .text{
-      font-size: large;
-      position: absolute;
-      margin-left:3px;
-    }
+      font-family:Impact, Charcoal, sans-serif;
+      font-size:medium;
+      display: inline-block;
+      text-align: center;
 
+}
     .body{
       display: inline-block;
       padding: 10px 20px;
@@ -103,51 +142,81 @@
     }
 
 
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none; 
+      height: 10px;
+      width: 100px;
+      transform: rotate(-90deg) translate(44px, 0px);
+      margin: -40px;
+      cursor: pointer;
+      outline: none;
+      border-radius: 3px;
+      background: #f0f0f0;
+    }   
+
+  
+
+
+  input[type="range"]::-webkit-slider-thumb {
+
+    -webkit-appearance: none;
+    appearance: none; 
+    height: 10px;
+    width: 2px;
+    background-color: #636363;
+    border-radius: 3px;
+    border: none;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    width: 20px;
+  }
+
   </style>
 
 </head>
 <body>
+<div style="display:inline-block;font-size:0" >  
+    <input type="range" name="volume" min="0.0" max="10.0" id="volume" value="7.5" class="slider">
 
-
-<div style="float:left;">
-<div >
-  <button id="close" class="button_s">x</button>
-</div>
-<div>
-  <button id="pause" class="button">‖</button>
-</div>
-</div>
-
-
-
-
-<label id = 'info' class="text" > 没有音乐 </label>
-<label id = 'singer' class="text"> 没有音乐 </label>
-
-<div class="album-cover">
-  <img id = 'al' src = 'Snipaste_2023-07-25_20-36-49.png' width="100" height="100" alt="Album Cover>">
-</div>
-
-
+  <div style="display:inline-block;font-size:0">
+  <div >
+    <button id="close" class="button_s">x</button>
+    <button id="help" class="button_s" style="margin-right: 0;">?</button>
+  </div>
+  
   <div>
-    <button id="login" class="button_s"> &#128279 </button>
+    <button id="pause" class="button">‖</button>
+  </div>
+</div>
+</div>
+
+
+
+<div class="album-cover"  >
+    <img id = 'al' src = 'icon.png'  alt="Album Cover>">
+  <div class="info" style = "text-align: center;">
+    <button id="link" class="button_l">NetEase </button>
+    <label id = 'info_name' class="text" > 未登录 </label>    
+  </div>
+
+</div>
+
+<div style="display:inline-block;font-size:0">
+  <div >
+    <button id="login" class="button_s" > &#128279 </button>
+    <button id="move" class="button_s" style="-webkit-app-region: drag;" > + </button>
   </div>
   <div>
     <button id="play" class="button"> ▶ </button>
   </div>
+</div>
 
-
-  <!-- <button id="add" class="button">+</button>
-  <button id="sub" class="button">-</button> -->
-
-<!-- <div class="volume-control">
-  <div class="volume-slider"></div>
-</div> -->
-
-
-<audio controls id = "audio">
+<audio controls id = "audio" hidden = true>
 	<source id="player" src="" type="audio/mpeg" >
 </audio>
+
 
 <script src="script.js"></script>
 </body>

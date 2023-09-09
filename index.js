@@ -4,7 +4,7 @@
  * @Author: JBFace
  * @Date: 2023-08-25 11:29:22
  * @LastEditors: JBFace
- * @LastEditTime: 2023-09-01 00:25:26
+ * @LastEditTime: 2023-09-07 23:04:02
  */
 /*
  * @Descripttion: 
@@ -20,13 +20,15 @@
 //BrowserWindow 模块，它创建和管理程序的窗口。
 
 const { app, BrowserWindow } = require('electron')
-
+ipcMain = require('electron').ipcMain;
 //在 Electron 中，只有在 app 模块的 ready 事件被激发后才能创建浏览器窗口
+let window
+
 app.on('ready', () => {
 
   //创建一个窗口
   const mainWindow = new BrowserWindow(
-    { height: 120,
+    { height: 125,
       width: 800,
       transparent: true,
       resizable: false,
@@ -36,4 +38,9 @@ app.on('ready', () => {
     }
   )
   mainWindow.loadFile('./src/main.html')
+  window = mainWindow;
+})
+
+ipcMain.on('window-close', function() {
+  window.close();
 })
