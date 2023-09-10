@@ -4,7 +4,7 @@
  * @Author: JBFace
  * @Date: 2023-08-25 17:46:05
  * @LastEditors: JBFace
- * @LastEditTime: 2023-09-07 23:03:47
+ * @LastEditTime: 2023-09-10 19:07:35
  */
 let ipcRenderer = require('electron').ipcRenderer;
 const axios = require('axios');
@@ -233,7 +233,7 @@ async function getLoginStatus(cookie_str = '') {
 
   const res = await login_status({cookie : cookie_str})
 
-  if (res.status == 200) {
+  if (res.status == 200 && res.body.data.profile) {
     document.getElementById('al').src = res.body.data.profile.avatarUrl;
     document.getElementById('info_name').textContent = res.body.data.profile.nickname ;
     if (res.body.data.account.vipType > 0) {
@@ -244,7 +244,7 @@ async function getLoginStatus(cookie_str = '') {
     }
   }
   else{
-  document.getElementById('login').textContent = "&#128279";
+  document.getElementById('login').textContent = "🔗";
   }
   return res
 }
@@ -294,9 +294,9 @@ document.getElementById("link").addEventListener('click', (event) => {
 
 
 document.getElementById("help").addEventListener('click', () =>  {
-  // window.open("help.html"); 
-  out = get_first();
-  console.log(play_list)
+  window.open("help.html"); 
+  // out = get_first();
+  // console.log(play_list)
 });
 
 // document.getElementById('audio').addEventListener('playing', () => {
@@ -312,7 +312,12 @@ document.getElementById("audio").volume = 0.75;
 qr_key= await login_qr_key();
 
 const cookie = localStorage.getItem('cookie')
-await getLoginStatus(cookie);
+if (cookie){
+  await getLoginStatus(cookie);}
+else{
+  await getLoginStatus()
+}
+
 const statusRes = await (await login_qr_check({key:qr_key.body.data.unikey})).body;
 fill()
 

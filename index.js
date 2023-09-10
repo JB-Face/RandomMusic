@@ -4,7 +4,7 @@
  * @Author: JBFace
  * @Date: 2023-08-25 11:29:22
  * @LastEditors: JBFace
- * @LastEditTime: 2023-09-07 23:04:02
+ * @LastEditTime: 2023-09-10 19:02:05
  */
 /*
  * @Descripttion: 
@@ -28,8 +28,8 @@ app.on('ready', () => {
 
   //创建一个窗口
   const mainWindow = new BrowserWindow(
-    { height: 125,
-      width: 800,
+    { height: 120,
+      width: 330,
       transparent: true,
       resizable: false,
       frame: false,
