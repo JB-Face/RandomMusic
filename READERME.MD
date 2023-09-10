@@ -4,7 +4,7 @@
  * @Author: JBFace
  * @Date: 2023-09-10 20:36:35
  * @LastEditors: JBFace
- * @LastEditTime: 2023-09-10 20:42:29
+ * @LastEditTime: 2023-09-10 20:50:54
 -->
 # MUSIC TRIP
 
@@ -15,6 +15,7 @@
 本软件依附于网易云，本软件本身无法提供任何音乐
 
 # 下载
+[压缩包 打开.exe 运行](https://github.com/JB-Face/RandomMusic/releases/download/0.1.2/MusicTrip-win32-x64.zip)
 
 # 使用说明 
 ![ ](https://github.com/JB-Face/RandomMusic/blob/1e26c57081a0e4ac49cc7a7bc6bacb6e886fcebc/src/help.png)
