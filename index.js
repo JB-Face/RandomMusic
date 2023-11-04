@@ -4,7 +4,7 @@
  * @Author: JBFace
  * @Date: 2023-08-25 11:29:22
  * @LastEditors: JBFace
- * @LastEditTime: 2023-09-10 19:02:05
+ * @LastEditTime: 2023-09-14 15:40:24
  */
 /*
  * @Descripttion: 
@@ -28,11 +28,11 @@ app.on('ready', () => {
 
   //创建一个窗口
   const mainWindow = new BrowserWindow(
-    { height: 120,
+    { height: 320,
       width: 330,
-      transparent: true,
-      resizable: false,
-      frame: false,
+      // transparent: true,
+      // resizable: false,
+      // frame: false,
       webPreferences: 
       { nodeIntegration: true, contextIsolation: false, enableRemoteModule: true, }
     }

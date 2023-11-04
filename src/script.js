@@ -2,17 +2,30 @@
  * @Descripttion: 
  * @version: 
  * @Author: JBFace
+ * @Date: 2023-09-10 01:23:41
+ * @LastEditors: JBFace
+ * @LastEditTime: 2023-09-20 21:50:14
+ */
+/*
+ * @Descripttion: 
+ * @version: 
+ * @Author: JBFace
  * @Date: 2023-08-25 17:46:05
  * @LastEditors: JBFace
- * @LastEditTime: 2023-09-10 19:07:35
+ * @LastEditTime: 2023-09-19 12:02:48
  */
+
+//todo: 添加一个喜欢按钮
+// todo: 添加一个历史记录
+
 let ipcRenderer = require('electron').ipcRenderer;
 const axios = require('axios');
 const { album,login_cellphone, user_cloud,register_anonimous,
   search,song_url_v1,check_music,song_detail,
   login_qr_key,login_qr_create,login_qr_check,
-login_status,login_refresh} = require('NeteaseCloudMusicApi');
+login_status,login_refresh,like,likelist,playlist_tracks,user_playlist,playlist_track_add, playlist_track_all, playlist_detail} = require('NeteaseCloudMusicApi');
 const nodemon = require('nodemon');
+const { ftruncate } = require('original-fs');
 
 link_url = "https://music.163.com/" //网易云链接
 MAX_POOL = 40;
@@ -20,6 +33,12 @@ let play_list = new Array(MAX_POOL).fill(false) //缓冲长度
 
 let play_index = 0
 let play_id = 0
+let is_login = 0
+let login_img = 0
+let al_path = 0
+let user_id = 0
+
+let like_list = 0
 
 
 async function play_music(song_id) {
@@ -46,17 +65,35 @@ async function next(){
 
 //##################### 基础方法 #############################
 
+async function like_id() {
+  res = await like({id:347230});
+  // likeATrack({ id :play_id, like:true })
+  //res = await user_playlist({uid:user_id})
+  //like_playlist = res.body.playlist[0].id
+  //res = await playlist_detail({id : like_playlist})
+
+ //res = await playlist_track_add({pid:like_playlist,ids:play_id.toString()})
+  //res = await playlist_tracks({op:'add',pid:like_playlist,tracks: play_id.toString()})
+  // a = await likelist({uid : user_id});
+  // console.log(a);
+
+  // res = await like()
+  // console.log(res)
+  return res;
+}
+
 
 async function get_info(info){
   song_name = info.name;
   singer_list =info.ar;
 
   link_url = "https://music.163.com/#/song?id=" + info.id  ;
-  console.log(document.getElementById('link').src)
 
   document.getElementById('info_name').textContent = song_name ;
   r_album = info.al;
   document.getElementById('al').src = r_album.picUrl
+  login_img = 0;
+  al_path = r_album.picUrl;
 }
 
 function getRandomInt(min, max) {
@@ -84,10 +121,15 @@ async function random_music(){
 
 
 function check_type(info) {
-  if (info.name != null && info.name != "" ) {
-    return true
+  if (info.name == null && info.name == "" ) {
+    return false
   }
-  else{return false} 
+  
+  if(info.djId!=0){return false}
+  if(info.t!=0){return false}
+  
+  return true
+
 }
 
 async function get_music_info(rid){
@@ -189,11 +231,38 @@ async function play(){
   play_list.splice(play_index,1)
   await get_info(info);
   play_music(info.id);
+  play_id = info.id
   play_list.push(null);
   fill();
 
-  console.log(document.getElementById('audio').duration)
+}
 
+
+
+async function getLoginStatus(cookie_str = '') {
+
+  const res = await login_status({cookie : cookie_str})
+
+  if (res.status == 200 && res.body.data.profile) {
+    document.getElementById('al').src = res.body.data.profile.avatarUrl;
+    login_img = 1;
+    document.getElementById('info_name').textContent = res.body.data.profile.nickname ;
+    is_login = 1;
+    user_id =  res.body.data.account.id
+    if (res.body.data.account.vipType > 0) {
+      document.getElementById('login').textContent = "VIP";
+      document.getElementById('link').disabled = 0;
+    }
+    else{
+    document.getElementById('login').textContent = "💿";
+    document.getElementById('link').disabled = 0;
+    }
+  }
+  else{
+  document.getElementById('login').textContent = "🔗";
+  is_login = 0;
+}
+  return res
 }
 
 
@@ -206,14 +275,21 @@ async function play(){
 document.getElementById('play').addEventListener('click', async () => {
     // await next();
     play();
+
+    audio = document.getElementById('audio')
+    document.getElementById('pause').textContent = "‖";
+
+
   })
 
 document.getElementById('pause').addEventListener('click', async () => {
   audio = document.getElementById('audio')
   if (audio.paused) {
     audio.play();
+    document.getElementById('pause').textContent = "‖";
   } else {
     audio.pause();
+    document.getElementById('pause').textContent = "▶";
   }
 }
 )
@@ -229,34 +305,22 @@ document.getElementById('audio').addEventListener('ended', async () => {
 
 
 
-async function getLoginStatus(cookie_str = '') {
-
-  const res = await login_status({cookie : cookie_str})
-
-  if (res.status == 200 && res.body.data.profile) {
-    document.getElementById('al').src = res.body.data.profile.avatarUrl;
-    document.getElementById('info_name').textContent = res.body.data.profile.nickname ;
-    if (res.body.data.account.vipType > 0) {
-      document.getElementById('login').textContent = "VIP";
-    }
-    else{
-    document.getElementById('login').textContent = "💿";
-    }
-  }
-  else{
-  document.getElementById('login').textContent = "🔗";
-  }
-  return res
-}
 
 
 document.getElementById('login').addEventListener('click', async () => {
   await login_refresh();
-  console.log('login');
 
   // 查询登录状态
   const cookie = localStorage.getItem('cookie')
   await getLoginStatus(cookie)
+
+  if (is_login) {
+    if (login_img && al_path) {
+      document.getElementById('al').src = al_path;
+    }
+    return
+  }
+
 
   // 获取二维码 base64
   
@@ -278,6 +342,7 @@ document.getElementById('login').addEventListener('click', async () => {
     console.log('授权登录成功')
     await getLoginStatus(statusRes.cookie)
     localStorage.setItem('cookie', statusRes.cookie)
+    document.getElementById('link').disabled = 0;
   }
 }, 3000)
 })
@@ -299,6 +364,15 @@ document.getElementById("help").addEventListener('click', () =>  {
   // console.log(play_list)
 });
 
+
+document.getElementById('love').addEventListener('click', async ()=>{
+    res = await like_id()
+    // if (res.body.code == 200)
+    // {
+    //   document.getElementById('love').src =  "❤"
+    // }
+})
+
 // document.getElementById('audio').addEventListener('playing', () => {
 //     // await next();
 //     document.getElementById("play").textContent = '▶I';
@@ -308,6 +382,8 @@ document.getElementById("help").addEventListener('click', () =>  {
 async function init(){
 document.getElementById("audio").controls = false;
 document.getElementById("audio").volume = 0.75;
+
+document.getElementById('link').disabled = 1;
 
 qr_key= await login_qr_key();
 
